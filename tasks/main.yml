@@ -1,0 +1,20 @@
+---
+
+- name: Install etckeeper packages
+  become: true
+  when: etckeeper_enabled | bool
+  apt:
+    pkg: '{{ item }}'
+    state: 'latest'
+    install_recommends: no
+  with_items: [ 'etckeeper' ]
+
+- name: Initialize etckeeper
+  become: true
+  when: etckeeper_enabled | bool
+  command: etckeeper init
+
+- name: First commit
+  become: true
+  when: etckeeper_enabled | bool
+  command: etckeeper commit 'First commit'
