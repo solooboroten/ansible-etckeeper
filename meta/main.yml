@@ -1,0 +1,17 @@
+---
+dependencies:
+
+galaxy_info:
+  author: 'Aleksey Avdeev'
+  description: 'Install and configure etckeeper'
+  license: Apache 2
+  min_ansible_version: 1.9
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  - name: Debian
+    versions:
+    - all
+  categories:
+  - system

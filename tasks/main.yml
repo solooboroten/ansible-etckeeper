@@ -1,15 +1,67 @@
 ---
+- name: Assert platform is supported
+  tags: etckeeper
+  assert:
+    that:
+      - ansible_os_family in etckeeper_supported_platforms
+
+- name: Assert etckeeper_vcs is valid
+  tags: etckeeper
+  assert:
+    that:
+      - etckeeper_vcs in etckeeper_supported_vcs
+
+- name: Include OS specific vars
+  tags: etckeeper
+  include_vars: "{{ ansible_os_family }}.yml"
+
+# Install the configuration first.
+#   This ensures initialization of etckeeper uses the configured values.
+- name: Install etckeeper configuration directory
+  tags: etckeeper
+  become: true
+  file:
+    state: directory
+    dest: /etc/etckeeper
+    owner: 0
+    group: 0
+    mode: 0755
+
+- name: Install etckeeper configuration
+  tags: etckeeper
+  become: true
+  template:
+    src: etckeeper.j2
+    dest: /etc/etckeeper/etckeeper.conf
+    owner: 0
+    group: 0
+    mode: 0644
 
 - name: Install etckeeper packages
+  tags: etckeeper
   become: true
   when: etckeeper_enabled | bool
   apt:
-    pkg: '{{ item }}'
+    pkg: '{{ etckeeper_package_list + [ etckeeper_vcs ] }}'
     state: 'latest'
     install_recommends: no
-  with_items: [ 'etckeeper' ]
+
+- name: Add entries to .gitignore
+  tags: etckeeper
+  become: true
+  when:
+    - etckeeper_vcs == 'git'
+  with_flattened:
+    - etckeeper_gitignore
+    - etckeeper_gitignore_group
+    - etckeeper_gitignore_host
+  lineinfile:
+    dest: '/etc/.gitignore'
+    line: "{{ item }}"
+    insertbefore: 'BOF'
 
 - name: Initialize etckeeper
+  tags: etckeeper
   become: true
   when: etckeeper_enabled | bool
   command: etckeeper init
