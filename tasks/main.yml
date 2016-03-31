@@ -70,3 +70,4 @@
   become: true
   when: etckeeper_enabled | bool
   command: etckeeper commit 'First commit'
+  ignore_errors: true
