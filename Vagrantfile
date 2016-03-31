@@ -8,7 +8,7 @@ Vagrant.configure(VAGRANT_API_VERSION) do |config|
   if ENV['ANSIBLE_ETCKEEPER_VAGRANT_BOXNAME']
     config.vm.box = ENV['ANSIBLE_ETCKEEPER_VAGRANT_BOXNAME']
   else
-    config.vm.box = 'ubuntu/trusty64'
+    config.vm.box = 'ubuntu/trusty32'
   end
 
   config.vm.define :ansibleetckeepertest do |d|
